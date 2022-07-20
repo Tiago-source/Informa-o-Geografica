@@ -1,0 +1,609 @@
+<html>
+<head>
+	<title>Informação Geográfica e Visualização</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="css/leaflet.css"/>
+	<link rel="stylesheet" href="css/leaflet.draw.css"/>
+	<link rel="stylesheet" href="css/formMarker.css"/>
+	<link rel="stylesheet" href="css/main.css"/>
+	<link rel="stylesheet" href="css/map.css"/>
+	<link rel="stylesheet" href="css/checkBox.css"/>
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+	<script src="js/jquery-3.1.0.min.js"></script>
+	<script src="js/leaflet.draw.js"></script>
+	<script src='js/leaflet-omnivore.js'></script> 
+	<script src="js/terraformer.min.js"></script>
+	<script src="js/terraformer-wkt-parser.min.js"></script>
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+	<script src="vendor/animsition/js/animsition.min.js"></script>
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.js"></script>
+	<script src="vendor/select2/select2.min.js"></script>
+	<script src="vendor/daterangepicker/moment.min.js"></script>
+	<script src="vendor/daterangepicker/daterangepicker.js"></script>
+	<script src="vendor/countdowntime/countdowntime.js"></script>
+	<script type="text/javascript" src="js/map.js"></script>
+
+	<link 
+        rel="stylesheet" 
+        href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css"
+    />
+
+</head>
+
+<body>
+	<div id="map-wrapper">
+        <div id="map"></div>
+        </div>
+
+
+<!---------------------------------------------->
+
+		
+		
+		<div class="col-xs-6 col-sm-2 sidebar-offcanvas" id="sidebarRight" role="navigation" style="float : right;bottom: 100%;background-color: teal;">
+              <div class="well sidebar-nav">
+                <ul class="nav">
+                  <li style="font-size:20px";><b>Layers</b></li>
+				  <br>	
+				  <input id="distritos" type="checkbox" unchecked/> Mostrar Distritos
+				  <br>
+				  <input id="wfs1" type="checkbox" unchecked/> Mostrar Concelhos
+				  <br>
+                  <input id="wms1" type="checkbox" unchecked/> Mostrar Freguesias
+				  <br>
+                    <input id="estradas" type="checkbox" unchecked/> Mostrar Estradas
+				   <br>
+				   <br>
+				   <li style="font-size:20px";><b>Dados agriculas</b></li>
+				   <br>
+				   	 <input id ="estufas" type="checkbox" unchecked/> Mostrar Estufas
+				   <br>
+				      <input id ="zonas_agro" type="checkbox" unchecked/> Mostrar Zonas Agriculas
+				   <br>
+				       <input id ="cursos_agua" type="checkbox" unchecked/> Mostrar cursos de Água
+				   <br>
+				   <br>
+				     <li style="font-size:20px";><b>Categorias</b></li>
+				   <br> 
+							<select style="margin: 0 auto;" id="list" name="list" onchange="loadCat()">
+							    <option value= "">Selecione: </option>
+							</select>
+				   <hr>
+				   <button class="button-17" onclick="openFormCat()">Adicionar Categoria</button>
+				   <br>
+				   <br>
+				   <button class="button-17" id="deleteCat" onclick="openFormDeleteCat()">Eliminar Categoria</button>
+            </div>
+<!----------------------------------------------->
+
+
+	<!-- Form para adicionar categoria -->
+	<form id="formCat"  action="php/addCat.php" class="form-container" method="post">
+
+		 <!--Botao X no cimo da página -->
+	    <div class="imgcontainer">
+		    <span onclick="closeFormCat()" class="close" title="Close PopUp">&times;</span>
+		    <h1 class="h1"> Adicionar Categoria</h1>
+	    </div>
+	    <div class="wrap-input100">
+			<input  type="text" id="cat" name="cat" placeholder="Introduza a Categoria" required>
+			<input  type="text" id="cor" name="cor" placeholder="Introduza a cor(Hex)" required>
+			<input  type="text" id="tipo" name="tipo" placeholder="Introduza o tipo(ponto/linha/poligno)" required>
+
+		</div>
+
+		<br></br>
+
+		<div class="container-login100-form-btn m-t-32">
+			<input class="login100-form-btn" type="submit"  value="Adicionar"></input> </a>
+			<br></br>
+		</div>
+	</form> 
+
+
+		<!-- Form para eliminar categoria -->
+	<form id="formDeleteCat"  action="php/deleteCat.php" class="form-container" method="post" style="height: 200px;">
+
+		 <!--Botao X no cimo da página -->
+	    <div class="imgcontainer">
+		    <span onclick="closeFormDeleteCat()" class="close" title="Close PopUp">&times;</span>
+		    <h1 class="h1"> Eliminar Categoria</h1>
+	    </div>
+	    <div class="container-login100-form-btn">
+			<select style="margin: 0 auto;" id="cate" name="cate">
+			    <option value= "">Selecione: </option>
+			</select>
+			</div>
+
+		<br></br>
+
+		<div class="container-login100-form-btn m-t-32">
+			<input class="login100-form-btn" type="submit"  value="Eliminar"></input> </a>
+			<br></br>
+		</div>
+	</form> 
+
+
+
+
+	<!-- Form para adicionar ponto -->
+	<form id="formPoint"  action="php/drawPoint.php" class="form-container" method="post" style="height:75%"> 
+
+		<input type="text" class="label" id ="geo" name="geo">
+		 <!--Botao X no cimo da página -->
+	    <div class="imgcontainer">
+		    <span onclick="closeFormPoint()" class="close" title="Close PopUp">&times;</span>
+		    <h1 class="h1"> Adicionar Ponto</h1>
+	    </div>
+
+			<!--<h5 type="text" id="coordenadas"></h5> -->  
+	    <div class="wrap-input100">
+	    <input class="cb" id ="estufas" name="estufas" value="simestufas" type="checkbox" onchange="cbChange(this)" unchecked/>Estufas
+			<br>
+			<input class="cb" id ="categoria" name="categoria" value="simcategoria" type="checkbox" onchange="cbChange(this)" unchecked/>Categoria
+			<br>
+			<select style="margin: 0 auto; display: none;" id="catPontos" name="catPontos">
+			    <option value= "">Selecione: </option>
+			</select>
+			<hr>
+			<input  type="text" id="nome" name="nome" placeholder="Introduza a descrição da estufa" required>
+			<input  type="text" id="tipo_producao" name="tipo_producao" placeholder="Introduza a producao da estufa" required>
+			<input  type="text" id="area" name="area" placeholder="Introduza a area da estufa" required>
+
+		</div>
+
+
+		<br></br>
+
+		<div class="container-login100-form-btn m-t-32">
+			<input class="login100-form-btn" type="submit"  value="Adicionar"></input> </a>
+			<br></br>
+		</div>
+
+
+
+	</form> 
+
+
+	<!-- Form para editar ponto -->
+	<form id="formPointEdit"  action="php/modifyFeature.php" class="form-container" method="post">
+
+		<input type="text" class="label" id ="geo_edit" name="geo_edit">
+		 <!--Botao X no cimo da página -->
+	    <div class="imgcontainer">
+		    <span onclick="closeFormPointEdit()" class="close" title="Close PopUp">&times;</span>
+		    <h1 class="h1"> Editar Estufa</h1>
+	    </div>
+
+		<!--<h5 type="text" id="coordenadas"></h5> -->  
+		<div class="wrap-input100">
+			<input  type="text" id="nome_edit" name="nome_edit" placeholder="Introduza a descrição da estufa" required>
+			<input  type="text" id="tipo_producao" name="tipo_producao_edit" placeholder="Introduza a colheita da estufa" required>
+			<input  type="text" id="area" name="area_edit" placeholder="Introduza a colheita da estufa" required>
+		</div>
+
+		<br></br>
+
+		<div class="container-login100-form-btn m-t-32">
+			<input class="login100-form-btn" type="submit"  value="Editar"></input> </a>
+			<br></br>
+		</div>
+
+
+
+	</form> 
+
+	<!-- Form para adicionar poligono -->
+	<form id="formPolygon"  action="php/drawPolygon.php" class="form-container" method="post">
+
+		<input type="text" class="label" id ="zona" name="zona">
+		 <!--Botao X no cimo da página -->
+	    <div class="imgcontainer">
+		    <span onclick="closeFormPolygon()" class="close" title="Close PopUp">&times;</span>
+		    <h1 class="h1"> Adicionar Poligno</h1>
+	    </div>
+
+		<!--<h5 type="text" id="coordenadas"></h5> -->  
+		<div class="wrap-input100">
+	    <input class="cb_zona" id ="zona_agro" name="zona_agro" value="simzona_agro" type="checkbox" onchange="cbChangeZona(this)" unchecked/>Zona Agricola
+			<br>
+			<input class="cb_zona" id ="categoria_zona" name="categoria_zona" value="simcategoria_zona" type="checkbox" onchange="cbChangeZona(this)" unchecked/>Categoria
+			<br>
+			<select style="margin: 0 auto; display: none;" id="catZona" name="catZona">
+			    <option value= "">Selecione: </option>
+			</select>
+			<input  type="text" id="nome_zona" name="nome_zona" placeholder="introduza o nome da zona agricula" required>
+		</div>
+
+		<br></br>
+
+		<div class="container-login100-form-btn m-t-32">
+			<input class="login100-form-btn" type="submit"  value="Adicionar"></input> </a>
+			<br></br>
+		</div>
+	</form> 
+	
+
+	<!-- form adicionar linha -->
+	<form id="formLine"  action="php/drawLine.php" class="form-container" method="post">
+
+		<input type="text" class="label" id ="linha" name="linha">
+		 <!--Botao X no cimo da página -->
+	    <div class="imgcontainer">
+		    <span onclick="closeFormLine()" class="close" title="Close PopUp">&times;</span>
+		    <h1 class="h1"> Adicionar Linha</h1>
+	    </div>
+		<div class="wrap-input100">
+			<input class="cb_linha" id ="curso_agua" name="curso_agua" value="simcurso_agua" type="checkbox" onchange="cbChangeLinha(this)" unchecked/>Curso de água
+			<br>
+			<input class="cb_linha" id ="categoria_linha" name="categoria_linha" value="simcategoria_linha" type="checkbox" onchange="cbChangeLinha(this)" unchecked/>Categoria
+			<br>
+			<select style="margin: 0 auto; display: none;" id="catLinha" name="catLinha">
+			    <option value= "">Selecione: </option>
+			</select>
+			<input  type="text" id="descricao" name="descricao" placeholder="introduza o nome do curso de agua" required>
+		</div>
+
+		<br></br>
+
+		<div class="container-login100-form-btn m-t-32">
+			<input class="login100-form-btn" type="submit"  value="Adicionar"></input> </a>
+			<br></br>
+		</div>
+
+
+	</form> 
+
+
+<script src="js/map.js"></script>
+<?php include('php/drawPolygon.php') ?> 
+<?php include('php/drawPoint.php') ?>
+<?php include('php/drawLine.php') ?>
+	
+</body>
+</html>
+
+<script type="text/javascript">
+	function closeFormPolygon() {
+	  document.getElementById("formPolygon").style.display = "none";
+	  $('#formPolygon')[0].reset();
+	}
+
+	function openFormPoint() {
+	  document.getElementById("formPoint").style.display = "block";
+	}
+
+	function closeFormPoint() {
+	  document.getElementById("formPoint").style.display = "none";
+	  $('#formPoint')[0].reset();
+	}
+
+	function openFormPolygon() {
+	  document.getElementById("formPolygon").style.display = "block";
+	}
+
+	function openFormLine() {
+	  document.getElementById("formLine").style.display = "block";
+	}
+
+	function closeFormLine() {
+	  document.getElementById("formLine").style.display = "none";
+	  $('#formLine')[0].reset();
+	}
+
+	function openFormPointEdit() {
+	  document.getElementById("formPointEdit").style.display = "block";
+	}
+
+	function closeFormPointEdit() {
+	  document.getElementById("formPointEdit").style.display = "none";
+	  $('#formPointEdit')[0].reset();
+	}
+
+	function openFormCat() {
+	  document.getElementById("formCat").style.display = "block";
+	}
+
+	function closeFormCat() {
+	  document.getElementById("formCat").style.display = "none";
+	  $('#formCat')[0].reset();
+	}
+
+		function openFormDeleteCat() {
+		getCats();
+	  document.getElementById("formDeleteCat").style.display = "block";
+	}
+
+	function closeFormDeleteCat() {
+	  document.getElementById("formDeleteCat").style.display = "none";
+	  $('#formDeleteCat')[0].reset();
+	}
+
+
+function cbChange(obj) {
+    var cbs = document.getElementsByClassName("cb");
+    var text = document.getElementById("catPontos");
+    var text1 = document.getElementById("nome");
+    var text2 = document.getElementById("tipo_producao");
+    var text3 = document.getElementById("area");
+
+
+
+    for (var i = 0; i < cbs.length; i++) {
+        cbs[i].checked = false;
+    }
+    obj.checked = true;
+
+    if (obj.id == "categoria") {
+    	getCatsPontos();
+    	text.style.display = "block";
+    	text1.style.display = "none";
+    	text2.style.display = "none";
+    	text3.style.display = "none";
+
+    	$('#nome').prop('required',false);
+    	$('#tipo_producao').prop('required',false);
+    	$('#area').prop('required',false);
+    }else{
+    	text.style.display = "none";
+    	text1.style.display = "block";
+    	text2.style.display = "block";
+    	text3.style.display = "block";
+
+    	$('#nome').prop('required',true);
+    	$('#tipo_producao').prop('required',true);
+    	$('#area').prop('required',true);
+    }
+}
+
+
+//-------------Get Categorias
+function getCats(){
+ $.ajax({
+        url: './php/loadCat.php',
+        type: 'post',
+        dataType: 'json',
+        success: function(response){
+
+           createRows(response);
+
+        }
+     });
+}
+
+
+function createRows(response){
+   var len = 0;
+
+   if(response != null){
+     len = response.length;
+   }
+
+   if(len > 0){
+     for(var i=0; i<len; i++){
+        var id = response[i].id;
+        var categoria = response[i].categoria;
+
+        var opt = "<option value= "+ id +">" + categoria +  "</option>";
+
+        $("#cate").append(opt);
+     }
+   }
+}
+
+
+//---------------------Get Categorias Tipo Ponto
+
+function getCatsPontos(){
+ $.ajax({
+        url: './php/loadCatPonto.php',
+        type: 'post',
+        dataType: 'json',
+        success: function(response){
+
+           createRowsCatsPontos(response);
+
+        }
+     });
+}
+
+
+function createRowsCatsPontos(response){
+   var len = 0;
+   if(response != null){
+     len = response.length;
+   }
+
+   if(len > 0){
+     for(var i=0; i<len; i++){
+        var id = response[i].id;
+        var categoria = response[i].categoria;
+
+
+        var opt = "<option value= "+ id +">" + categoria +  "</option>";
+
+        $("#catPontos").append(opt);
+     }
+   }
+}
+
+
+///----------------------Categorias Zonas
+
+function cbChangeZona(obj) {
+    var cbs = document.getElementsByClassName("cb_zona");
+    var text = document.getElementById("catZona");
+    var text1 = document.getElementById("nome_zona");
+
+
+
+    for (var i = 0; i < cbs.length; i++) {
+        cbs[i].checked = false;
+    }
+    obj.checked = true;
+
+    if (obj.id == "categoria_zona") {
+    	getCatsZonas();
+    	text.style.display = "block";
+    	text1.style.display = "none";
+
+    	$('#nome_zona').prop('required',false);
+
+    }else{
+    	text.style.display = "none";
+    	text1.style.display = "block";
+
+
+    	$('#nome_required').prop('required',true);
+
+    }
+}
+
+
+function getCatsZonas(){
+ $.ajax({
+        url: './php/loadCatZonas.php',
+        type: 'post',
+        dataType: 'json',
+        success: function(response){
+
+           createRowsCatsZonas(response);
+
+        }
+     });
+}
+
+
+function createRowsCatsZonas(response){
+   var len = 0;
+
+   if(response != null){
+     len = response.length;
+   }
+
+   if(len > 0){
+     for(var i=0; i<len; i++){
+        var id = response[i].id;
+        var categoria = response[i].categoria;
+
+        var opt = "<option value= "+ id +">" + categoria +  "</option>";
+
+        $("#catZona").append(opt);
+     }
+   }
+}
+
+
+//------------------- categoria Linhas
+
+
+function cbChangeLinha(obj) {
+    var cbs = document.getElementsByClassName("cb_linha");
+    var text = document.getElementById("catLinha");
+    var text1 = document.getElementById("descricao");
+
+
+
+    for (var i = 0; i < cbs.length; i++) {
+        cbs[i].checked = false;
+    }
+    obj.checked = true;
+
+    if (obj.id == "categoria_linha") {
+    	getCatsLinhas();
+    	text.style.display = "block";
+    	text1.style.display = "none";
+
+    	$('#descricao').prop('required',false);
+
+    }else{
+    	text.style.display = "none";
+    	text1.style.display = "block";
+
+
+    	$('#descricao').prop('required',true);
+
+    }
+}
+
+
+function getCatsLinhas(){
+ $.ajax({
+        url: './php/loadCatLinhas.php',
+        type: 'post',
+        dataType: 'json',
+        success: function(response){
+
+           createRowsCatsLinhas(response);
+
+        }
+     });
+}
+
+
+function createRowsCatsLinhas(response){
+   var len = 0;
+
+   if(response != null){
+     len = response.length;
+   }
+
+   if(len > 0){
+     for(var i=0; i<len; i++){
+        var id = response[i].id;
+        var categoria = response[i].categoria;
+
+        var opt = "<option value= "+ id +">" + categoria +  "</option>";
+
+        $("#catLinha").append(opt);
+     }
+   }
+}
+
+
+
+//-----------------Get All Categorias
+
+
+ $.ajax({
+        url: './php/loadCat.php',
+        type: 'post',
+        dataType: 'json',
+        success: function(response){
+
+           createRowsSideBar(response);
+
+        }
+     });
+
+
+
+function createRowsSideBar(response){
+   var len = 0;
+
+   if(response != null){
+     len = response.length;
+   }
+
+   if(len > 0){
+     for(var i=0; i<len; i++){
+        var id = response[i].id;
+        var categoria = response[i].categoria;
+
+        var opt = "<option value= "+ categoria +">" + categoria +  "</option>";
+
+        $("#list").append(opt);
+     }
+   }
+}
+</script>

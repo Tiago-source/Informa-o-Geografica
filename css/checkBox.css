@@ -1,0 +1,10 @@
+#map-wrapper {
+    height: 100% 
+}
+
+#button-wrapper {
+    position: relative;
+    bottom: 50px;
+    margin-left: 10px;
+    width: 40%; 
+}
